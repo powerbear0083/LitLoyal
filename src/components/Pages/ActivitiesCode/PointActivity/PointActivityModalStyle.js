@@ -25,9 +25,6 @@ const AddPointActivityModalStyle = styled(Modal)`
     .form-point-content {
       font-size: 15px;
     }
-    .custom-invalid-feedback {
-      width: 380px;
-    }
     
     .discount-fields {
       .discount-input {

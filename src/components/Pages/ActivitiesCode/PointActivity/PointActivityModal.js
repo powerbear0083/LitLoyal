@@ -8,7 +8,7 @@ import startOfToday from 'date-fns/startOfToday';
 import {color} from 'styles/Variable/Color';
 import {Table, NoDataIndication, Row, Col, Radio, Input, Calendar} from 'components/Common';
 import {ComplexListWrapper, CalendarWrapper, InValidFeedback} from 'templates';
-import {setHours, setMinutes, setSeconds, setMilliseconds, format,} from 'date-fns';
+import {setHours, setMinutes, setSeconds, setMilliseconds, format, isAfter} from 'date-fns';
 import {regexRule} from 'utilities/validation';
 import {StyleInput} from 'components/Common/Elements/Input';
 import {StyleSelect} from 'components/Common/Elements/Select';
@@ -257,8 +257,19 @@ export default function PointActivityModal(
         }
         return isValid
     }
-    const [isValidBarcodeFiled, setIsValidBarcodeFiled] = useState(false);
 
+    /**
+     * @description 當結束日設定早於起始日，顯示錯誤訊息
+     * @param validated
+     * @param startDate
+     * @param endDate
+     * @returns {boolean}
+     */
+    const isShowEndDateMoreThanStartDate = ({ validated, startDate, endDate, isAfter}) => {
+        return validated && isAfter(startDate, endDate)
+    }
+    
+    const [isValidBarcodeFiled, setIsValidBarcodeFiled] = useState(false);
     /**
      * @description 活動條碼 onChange event
      * @param e
@@ -289,9 +300,8 @@ export default function PointActivityModal(
             });
             setIsValidBarcodeFiled(false);
         }
-        
-        
     }
+    
     
     /**
      * @description 名稱 onChange event
@@ -299,27 +309,32 @@ export default function PointActivityModal(
      * @param value
      */
     function onChangeName({currentTarget: {name, value}}) {
-        dispatch(
-            {
-                type: 'CHANGE_FIELD',
-                payload: {
-                    keyName: name,
-                    value: value
+        const strMaxLimit = 50
+        if(value.length <= strMaxLimit) {
+            dispatch(
+                {
+                    type: 'CHANGE_FIELD',
+                    payload: {
+                        keyName: name,
+                        value: value
+                    }
                 }
-            }
-        )
+            )
+        }
+        
     }
 
     const [isValidNameFiled, setIsValidNameFiled] = useState(false);
     function onBlurName({currentTarget: {name, value}}) {
-        const valueMaxLimit = 50
-        if(value.length === valueMaxLimit) {
+        const strMaxLimit = 50
+        if(value.length === strMaxLimit) {
             setIsValidNameFiled(true)
         } else {
             setIsValidNameFiled(false)
         }
     }
-
+    
+    
     /**
      * @description Calendar onChange event
      * @param e
@@ -510,6 +525,7 @@ export default function PointActivityModal(
                             required
                             type="text"
                             name={`barcode`}
+                            placeholder="Barcode，不可重複"
                             maxLength={128}
                             value={state.barcode}
                             onChange={onChangeBarcode}
@@ -529,6 +545,7 @@ export default function PointActivityModal(
                             required
                             type="text"
                             name={`name`}
+                            placeholder="上限 50 字"
                             maxLength={50}
                             value={state.name}
                             onChange={onChangeName}
@@ -616,6 +633,22 @@ export default function PointActivityModal(
                                 ? (
                                     <div className="custom-invalid-feedback mt-1 mb-3">
                                         尚未填寫
+                                    </div>
+                                )
+                                : null
+                        }
+                        {
+                            isShowEndDateMoreThanStartDate(
+                                {
+                                    validated,
+                                    startDate: state.startDate,
+                                    endDate: state.endDate, 
+                                    isAfter
+                                }
+                            )
+                                ? (
+                                    <div className="custom-invalid-feedback mt-1 mb-3">
+                                        不可早於起始日
                                     </div>
                                 )
                                 : null

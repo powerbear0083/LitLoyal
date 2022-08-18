@@ -20,6 +20,10 @@ const AddPointActivityModalStyle = styled(Modal)`
     
     .input-col .form-control{
       height: 32px;
+      
+      &::placeholder {
+        color: ${colorObj.gray};
+      }
     }
     
     .form-point-content {

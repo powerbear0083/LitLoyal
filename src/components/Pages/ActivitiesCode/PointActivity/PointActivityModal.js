@@ -403,16 +403,19 @@ export default function PointActivityModal(
     }
 
     function onChangeDiscountPointFields({currentTarget: {name, value}}) {
-        dispatch(
-            {
-                type: 'CHANGE_DISCOUNT_POINT_FIELDS',
-                payload: {
-                    name,
-                    currentType: state.discountPointType,
-                    value: value
+        // 最大輸入上限為 6
+        if(value.length <= 6) {
+            dispatch(
+                {
+                    type: 'CHANGE_DISCOUNT_POINT_FIELDS',
+                    payload: {
+                        name,
+                        currentType: state.discountPointType,
+                        value: value
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     const getPointBarcodeMultipleData = (value, list) => {

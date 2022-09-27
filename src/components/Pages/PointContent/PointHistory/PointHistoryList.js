@@ -2,7 +2,7 @@ import {useContext, useState} from 'react';
 import { PaginationListStandalone, SizePerPageDropdownStandalone,} from "react-bootstrap-table2-paginator";
 import { Row } from "react-bootstrap";
 import { RootContext } from "context/RootContext";
-import { Table, NoDataIndication, Col } from "components/Common";
+import { Table, NoDataIndication, Col, Modal } from "components/Common";
 import { StyleCard } from "components/Common/Elements/Card";
 import { StyleButton } from "components/Common/Elements/Button";
 import { PointHistoryContext } from "pages/PointContent/PointHistory/PointHistory";
@@ -10,6 +10,7 @@ import PointHistoryListStyle from "./PointHistoryListStyle";
 import Formatter from "./PointHistoryListFormatters.js";
 import PointDetailModal from "./PointDetailModal";
 import PointRecordModal from "./PointRecordModal";
+import BatchUploadModal from "./BatchUploadModal";
 
 /**
  * @description 點數歷程列表
@@ -199,6 +200,12 @@ export default function PointHistoryList(
   function closeRecordModal() {
     setIsShowRecordModal(false);
   }
+  
+  const [isShowBatchUploadModal, setIsShowBatchUploadModal] = useState(false);
+  
+  function clickBatchUpload() {
+    setIsShowBatchUploadModal(true);
+  }
   return (
     <PointHistoryListStyle>
       <StyleCard className="w-100 mt-4">
@@ -206,7 +213,7 @@ export default function PointHistoryList(
           totalSize={paginationProps.totalSize}
           paginationProps={paginationProps}
           sizePerPage={paginationProps.sizePerPage}
-          onClick={null}
+          onClickBatchUpload={clickBatchUpload}
           onClickRecordPoint={clickRecordPoint}
         />
         <Table
@@ -240,6 +247,10 @@ export default function PointHistoryList(
         isShowModal={isShowRecordModal}
         setIsShowRecordModal={setIsShowRecordModal}
       />
+      <BatchUploadModal
+        isShowBatchUploadModal={isShowBatchUploadModal}
+        setIsShowBatchUploadModal={setIsShowBatchUploadModal}
+      />
     </PointHistoryListStyle>
   )
 }
@@ -258,7 +269,7 @@ function TableToolBar(
     totalSize = 0,
     paginationProps = {},
     sizePerPage = 0,
-    onClick = () => { },
+    onClickBatchUpload = () => { },
     onClickRecordPoint = () => { }
   }
 ) {
@@ -281,7 +292,7 @@ function TableToolBar(
         <StyleButton
           className="mr-3"
           variant="outline-darkerGray"
-          onClick={onClick}
+          onClick={onClickBatchUpload}
           size="sm"
         >
           批次上傳

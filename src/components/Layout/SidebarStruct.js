@@ -58,10 +58,27 @@ export const SidebarStruct = [
     path: "/membership-setting",
     icon: <IconMembershipSetting />,
   },
+  // {
+  //   title: "點數設定",
+  //   path: "/point-setting",
+  //   icon: <IconDiamond />,
+  // },
   {
-    title: "點數設定",
-    path: "/point-setting",
+    title: "活動內容",
+    path: "#",
     icon: <IconDiamond />,
+    iconClosed: <SubmenuIsClosed className="icon-menu-switch" />,
+    iconOpened: <SubmenuIsOpened className="icon-menu-switch" />,
+    subNav: [
+      {
+        title: "點數設定",
+        path: "/point-setting",
+      },
+      {
+        title: "點數歷程",
+        path: "/point-history",
+      },
+    ],
   },
   {
     title: "活動條碼",

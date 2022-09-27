@@ -58,13 +58,8 @@ export const SidebarStruct = [
     path: "/membership-setting",
     icon: <IconMembershipSetting />,
   },
-  // {
-  //   title: "點數設定",
-  //   path: "/point-setting",
-  //   icon: <IconDiamond />,
-  // },
   {
-    title: "活動內容",
+    title: "點數內容",
     path: "#",
     icon: <IconDiamond />,
     iconClosed: <SubmenuIsClosed className="icon-menu-switch" />,

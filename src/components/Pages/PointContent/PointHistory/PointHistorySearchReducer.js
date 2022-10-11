@@ -1,6 +1,5 @@
 const initState = {
-  memberNumber: '',
-  memberPhone: '',
+  customId: '',
   dateRange: [
     {
       startDate: "",
@@ -8,7 +7,7 @@ const initState = {
       key: "selection"
     }
   ],
-  campaignName: '',
+  description: '',
 }
 
 

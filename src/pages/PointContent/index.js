@@ -1,3 +1,11 @@
-import PointHistory from './PointHistory/PointHistory'
+import PointHistorySearch from './PointHistory/PointHistorySearch'
+import PointHistoryList from './PointHistory/PointHistoryList'
+import { PointHistoryRootState, PointHistoryReducer } from './PointHistory/PointHistoryReducer'
 
-export { PointHistory }
+
+export { 
+  PointHistorySearch, 
+  PointHistoryList,
+  PointHistoryRootState,
+  PointHistoryReducer
+}

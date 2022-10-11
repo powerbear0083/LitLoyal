@@ -1,8 +1,16 @@
-import { useEffect, useState, createContext, useReducer } from 'react';
+import {useEffect, useState, createContext, useReducer, useContext} from 'react';
 import paginationFactory, { PaginationProvider } from "react-bootstrap-table2-paginator";
+import { formatISO } from "date-fns";
+import { RootContext } from "context/RootContext";
 import { Basic, ContentSection } from "templates";
 import { Breadcrumb } from "components/Common";
-import { PointHistorySearch, PointHistoryList, searchRootState, PointHistorySearchReducer } from "components/Pages/PointContent";
+import { getPointHistoryListApi } from "api/ApiMain";
+import { 
+  PointHistorySearch, 
+  PointHistoryList,
+  PointHistoryRootState,
+  PointHistoryReducer
+} from "components/Pages/PointContent";
 
 
 const PointHistoryContext = createContext();
@@ -15,8 +23,8 @@ const settingPageType = {
 };
 
 const defaultSort = {
-  so: "desc",
-  sf: "no"
+  sf: "no",
+  so: "desc"
 };
 
 const paginationOption = {
@@ -41,13 +49,14 @@ export default function PointHistory(
   }
 ) {
 
-  const [searchState, searchDispatch] = useReducer(PointHistorySearchReducer, searchRootState);
+  const rootData = useContext(RootContext);
+  const [pointHistoryState, pointHistoryDispatch] = useReducer(PointHistoryReducer, PointHistoryRootState);
 
   const [totalSize, setTotalSize] = useState(0);
   const [apiPayload, setApiPayload] = useState(
     {
-      ps: 25,
       p: 1,
+      ps: 25,
       ...defaultSort
     }
   );
@@ -61,7 +70,62 @@ export default function PointHistory(
     onSizePerPageChange: (sizePerPage, page) =>
       setApiPayload((prev) => ({ ...prev, ps: sizePerPage, p: page })),
   };
+
+  const [isLoadingTableData, setIsLoadingTableData] = useState(false);
+  const [tableData, setTableData] = useState([]);
+  const fetchPointHistoryList = async (brandId, apiPayload, pointHistoryState) => {
+    const startDate = pointHistoryState.dateRange[0].startDate
+    const endDate = pointHistoryState.dateRange[0].endDate
+    const newStartDate = startDate === ''
+      ? ''
+      : formatISO(startDate, { representation: "date" })
+    const newEndDate = endDate === ''
+      ? ''
+      : formatISO(startDate, { representation: "date" })
+    const newApiPayload = {
+      ...apiPayload,
+      brandId,
+      customId: pointHistoryState.customId,
+      startDate: newStartDate,
+      endDate: newEndDate,
+      description: pointHistoryState.description
+    }
+    setIsLoadingTableData(true);
+    const respond = await getPointHistoryListApi(newApiPayload);
+    const successState = 200
+    if(respond && respond?.data?.code === successState) {
+      const {
+        data: {
+          data: {
+            rows,
+            totalSize,
+          }
+        }
+      } = respond
+      setTableData(rows);
+      setTotalSize(totalSize);
+      setIsLoadingTableData(false);
+    }
+  }
+
+  useEffect(() => {
+    if(rootData.brandId) {
+      fetchPointHistoryList(rootData.brandId, apiPayload, pointHistoryState)
+    }
+  },[rootData?.brandId, apiPayload, pointHistoryState]);
+
+  /**
+   * @description 點數歷程搜尋事件
+   */
+  function clickSearch() {
+    fetchPointHistoryList(rootData.brandId, apiPayload, pointHistoryState)
+  }
   
+  function clearSearchFields() {
+    pointHistoryDispatch({
+      type: 'CLEAR_FIELDS',
+    });
+  }
   return (
     <PointHistoryContext.Provider
       value={
@@ -77,14 +141,17 @@ export default function PointHistory(
       <Basic navSection={NavSection}>
         <ContentSection>
           <PointHistorySearch
-            searchState={searchState}
-            searchDispatch={searchDispatch}
+            pointHistoryState={pointHistoryState}
+            pointHistoryDispatch={pointHistoryDispatch}
+            onClearFields={clearSearchFields}
+            onClickSearch={clickSearch}
           />
           <PaginationProvider
             pagination={
               paginationFactory(
                 {
                   ...paginationOption,
+                  ...paginationFn,
                   ...paginationFn,
                   totalSize,
                   page: apiPayload.p,
@@ -98,6 +165,8 @@ export default function PointHistory(
                 <PointHistoryList
                   paginationProps={paginationProps}
                   paginationTableProps={paginationTableProps}
+                  tableData={tableData}
+                  isLoadingTableData={isLoadingTableData}
                 />
               )
             }

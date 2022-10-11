@@ -39,7 +39,7 @@ export default function PointRecordModal(
   function onChange({ currentTarget: { name, value } }) {
     console.log(name, value);
     const remarkMaxLimit = 50
-    if (name === 'memberNumber') {
+    if (name === 'customId') {
       updateDispatch(name, value);
     }
     if(name === 'remark' && value.length <= remarkMaxLimit) {
@@ -81,9 +81,9 @@ export default function PointRecordModal(
             <Form.Control
               required
               type="text"
-              name={`memberNumber`}
+              name={`customId`}
               onChange={onChange}
-              value={recordState.memberNumber}
+              value={recordState.customId}
             />
             <Form.Control.Feedback type="invalid">此為必填欄位</Form.Control.Feedback>
           </div>

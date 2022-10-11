@@ -3,7 +3,7 @@
  * @type {{}}
  */
 export const recordRootState = {
-  memberNumber: '',
+  customId: '',
   memberName: '-',
   phone: '-',
   name: '',

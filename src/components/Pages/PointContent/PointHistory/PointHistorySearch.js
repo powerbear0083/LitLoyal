@@ -1,7 +1,7 @@
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import {Button, DateRange, Input} from 'components/Common';
+import {Button, DateRange} from 'components/Common';
 import PointHistorySearchStyle from './PointHistorySearchStyle.js';
 
 /**
@@ -11,13 +11,15 @@ import PointHistorySearchStyle from './PointHistorySearchStyle.js';
  */
 export default function PointHistorySearch(
   {
-    searchState = {},
-    searchDispatch = () => {},
+    pointHistoryState = {},
+    pointHistoryDispatch = () => {},
+    onClearFields = () => {},
+    onClickSearch = () => {},
   }
 ) {
   
   function onChanged({ currentTarget: { value, name } }) {
-    searchDispatch({
+    pointHistoryDispatch({
       type: 'CHANGE_FIELD',
       payload: {
         keyName: name,
@@ -26,22 +28,17 @@ export default function PointHistorySearch(
     });
   }
   
-  function onClearFileds() {
-    searchDispatch({
-      type: 'CLEAR_FIELDS',
-    });
-  }
-  
-  const isDisabledSearchBtn = (searchState) => {
+  const isDisabledSearchBtn = (pointHistoryState) => {
     return (
-      searchState.memberNumber === '' && 
-      searchState.memberPhone === '' && 
-      searchState.campaignName === ''
+      pointHistoryState.customId === '' &&
+      pointHistoryState.description === '' &&
+      pointHistoryState.dateRange[0].startDate === '' &&
+      pointHistoryState.dateRange[0].endDate === ''
     )
   }
   
   function onChangeDateRange(e) {
-    searchDispatch({
+    pointHistoryDispatch({
       type: 'CHANGE_DATE_RANGE',
       payload: e
     });
@@ -53,7 +50,7 @@ export default function PointHistorySearch(
         <Row>
           <Col>
             <Form.Group
-              controlId="memberNumber"
+              controlId="customId"
               className="align-items-center d-flex"
             >
               <Form.Label
@@ -62,29 +59,10 @@ export default function PointHistorySearch(
                 會員編號：
               </Form.Label>
               <Form.Control
-                name="memberNumber"
+                name="customId"
                 type="text"
                 placeholder=""
-                value={searchState.memberNumber}
-                onChange={onChanged}
-              />
-            </Form.Group>
-          </Col>
-          <Col>
-            <Form.Group
-              controlId="memberPhone"
-              className="align-items-center d-flex"
-            >
-              <Form.Label
-                className="form-caption"
-              >
-                手機：
-              </Form.Label>
-              <Form.Control
-                name="memberPhone"
-                type="phone"
-                placeholder=""
-                value={searchState.memberPhone}
+                value={pointHistoryState.customId}
                 onChange={onChanged}
               />
             </Form.Group>
@@ -100,17 +78,15 @@ export default function PointHistorySearch(
                 時間：
               </Form.Label>
               <DateRange
-                ranges={searchState.dateRange}
+                ranges={pointHistoryState.dateRange}
                 onChange={onChangeDateRange}
-                placeholder={``}
+                placeholder={`發送 / 扣除時間`}
               />
             </Form.Group>
           </Col>
-        </Row>
-        <Row>
           <Col>
             <Form.Group
-              controlId="campaignName"
+              controlId="description"
               className="align-items-center d-flex"
             >
               <Form.Label
@@ -120,10 +96,10 @@ export default function PointHistorySearch(
               </Form.Label>
               <Form.Control
                 type="text"
-                name="campaignName"
-                placeholder="消費 / 活動 / 好禮"
+                name="description"
+                placeholder="消費 / 活動 / 好禮名稱"
                 className="form-campaign-name"
-                value={searchState.campaignName}
+                value={pointHistoryState.description}
                 onChange={onChanged}
               />
             </Form.Group>
@@ -135,16 +111,15 @@ export default function PointHistorySearch(
               className="mr-3"
               size="md"
               variant="outline-darkerGray"
-              onClick={onClearFileds}
+              onClick={onClearFields}
             >
               清空條件
             </Button>
             <Button
               size="md"
               variant="primary"
-              onClick={() => {
-              }}
-              disabled={isDisabledSearchBtn(searchState)}
+              onClick={onClickSearch}
+              disabled={isDisabledSearchBtn(pointHistoryState)}
             >
               查詢
             </Button>

@@ -19,10 +19,9 @@ export default function PointDetailModal(
   
   const renderRowClassName = (rowIndex) => {
     let className = `d-flex detail-row`;
-
-    // 讓 index 從 1 開始
-    // 每 4 個 加上 class name
-    if ((rowIndex + 1) % 4 === 0) {
+    
+    // rowIndex 2 跟 6 加上分隔線 class name
+    if(rowIndex === 2 || rowIndex === 6) {
       className += ` separate-line`;
     }
     
@@ -30,16 +29,15 @@ export default function PointDetailModal(
   }
   const getCaptionType = (keyName) => {
     const type = {
-      time: '時間',
-      memberNum: '會員編號',
-      member: '會員',
-      phone: '手機',
-      name: '名稱',
-      changeType: '異動類別',
-      changePoint: '異動點數',
-      storeName: '虛擬店',
-      recordMail: '補登者',
-      recordDescription: '補登說明'
+      createDateTime: '時間',
+      customId: '會員編號',
+      name: '會員',
+      description: '名稱',
+      transactionCategory: '異動類別',
+      pointGain: '異動點數',
+      shopName: '消費門店',
+      creatorEmail: '補登者',
+      additionalInstructions: '補登說明'
     }
     return type[keyName]
   }
